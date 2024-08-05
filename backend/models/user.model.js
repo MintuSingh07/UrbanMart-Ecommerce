@@ -29,6 +29,12 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
     }],
+    tradeItems: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TradeItem' // Reference to TradeItem model
+    }]
 });
+
+userSchema.index({ 'tradeItems.location': '2dsphere' }); // Index for geospatial queries
 
 module.exports = mongoose.model('User', userSchema);

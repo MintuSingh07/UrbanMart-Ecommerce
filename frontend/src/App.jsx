@@ -7,6 +7,7 @@ import NavBar from './components/NavBar';
 import styled, { keyframes } from 'styled-components';
 import { gsap } from 'gsap';
 import SingleProduct from './pages/SingleProduct';
+import Trades from './pages/Trades';
 
 const App = () => {
   const loaderRef = useRef(null);
@@ -27,17 +28,17 @@ const App = () => {
       duration: 1.5,
       ease: 'power2.inOut',
     })
-    .to(textRef.current, {
-      opacity: 0,
-      duration: 1,
-      ease: 'power2.inOut',
-    }, "-=0.5")
-    .to(barsRef.current, {
-      y: -window.innerHeight,
-      stagger: 0.2,
-      duration: 1.5,
-      ease: 'power2.inOut',
-    }, "-=1");
+      .to(textRef.current, {
+        opacity: 0,
+        duration: 1,
+        ease: 'power2.inOut',
+      }, "-=0.5")
+      .to(barsRef.current, {
+        y: -window.innerHeight,
+        stagger: 0.2,
+        duration: 1.5,
+        ease: 'power2.inOut',
+      }, "-=1");
   }, []);
 
   return (
@@ -58,6 +59,7 @@ const App = () => {
         <Route path='/auth/register' element={<Register />} /> */}
         <Route path='/' element={<Home />} />
         <Route path='/product/:id' element={<SingleProduct />} />
+        <Route path='/trades' element={<Trades />} />
       </Routes>
     </Router>
   );
