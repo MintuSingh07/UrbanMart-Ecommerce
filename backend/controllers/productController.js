@@ -96,7 +96,7 @@ const singleProductController = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        const relatedProducts = await Product.find({category: product.category});
+        const relatedProducts = await Product.find({ category: product.category });
         if (!relatedProducts) {
             return res.status(404).json({ message: 'Product not found' });
         }
@@ -169,11 +169,23 @@ const deleteFromWishlistController = async (req, res) => {
     }
 };
 
+const getNotificationsController = async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        const user = await User.findById(userId);
+        res.json({"Notifications": user.notifications})
+    } catch (error) {
+        res.json({ "Error": error });
+    }
+}
+
 
 module.exports = {
     homeController,
     singleProductController,
     wishlistController,
     addToWishlistController,
-    deleteFromWishlistController
+    deleteFromWishlistController,
+    getNotificationsController,
 };

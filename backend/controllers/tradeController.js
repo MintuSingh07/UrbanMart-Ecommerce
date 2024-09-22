@@ -76,14 +76,53 @@ const getSelfTradesController = async (req, res) => {
     }
 
     try {
-        // Find the trades where the user field matches the given userId
-        const myTrades = await TradeItem.find({ user: userId }).populate('user', 'userName email');
-        res.json({ myTrades });
+        const populatedUser = await User.findById(userId).populate('tradeItems', 'name description');
+        console.log('User with populate:', populatedUser);
+
+        if (!populatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ myItems: populatedUser.tradeItems });
     } catch (error) {
         console.error('Error fetching self trades:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
+const requestTrade = async (req, res) => {
+    const { tradeItem, myTradeItem } = req.body;
+    const userId = req.user.id;
 
-module.exports = { handleSocketEvents, getSelfTradesController };
+    try {
+        // Find the user who listed the trade item
+        const tradeOwner = await User.findById(tradeItem.user._id);
+        if (!tradeOwner) {
+            return res.status(404).json({ message: 'Trade owner not found.' });
+        }
+
+        // Find the user's trade item
+        const userTradeItem = await TradeItem.findById(myTradeItem._id);
+        if (!userTradeItem) {
+            return res.status(404).json({ message: 'Your trade item not found.' });
+        }
+
+        // Send the trade request (you can customize this as needed)
+        // For example, you can add the request to the trade owner's notifications
+        tradeOwner.notifications.push({
+            type: 'trade-request',
+            message: `User ${req.user.userName} wants to trade ${myTradeItem.name} for your ${tradeItem.name}.`,
+            tradeItem: tradeItem,
+            myTradeItem: myTradeItem,
+        });
+
+        await tradeOwner.save();
+
+        return res.status(200).json({ message: 'Trade request sent successfully.' });
+    } catch (error) {
+        console.error('Error handling trade request:', error);
+        return res.status(500).json({ message: 'An error occurred while handling the trade request.' });
+    }
+};
+
+module.exports = { handleSocketEvents, getSelfTradesController, requestTrade };

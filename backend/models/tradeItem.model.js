@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const tradeItemSchema = mongoose.Schema({
+const tradeItemSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -30,9 +30,9 @@ const tradeItemSchema = mongoose.Schema({
                 message: 'Coordinates must have exactly 2 elements.'
             }
         }
-    }
+    },
 });
 
 tradeItemSchema.index({ location: '2dsphere' }); // Index for geospatial queries
 
-module.exports = mongoose.model('TradeItem', tradeItemSchema); // Export as TradeItem
+module.exports = mongoose.model('TradeItem', tradeItemSchema);

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const Container = styled.div`
     padding: 20px;
@@ -112,20 +114,37 @@ const TradeButton = styled.button`
 `;
 
 const SelfTrades = styled.div`
-    height: 20vh;
+    height: 25vh;
     width: 50%;
+    padding: 1vh;
     background-color: #b5b5b5;
     position: fixed;
     bottom: ${(props) => (props.isVisible ? '0%' : '-100%')}; /* Change bottom based on visibility */
     left: 50%;
     transform: translate(-50%, 0%);
     transition: all 0.5s linear; /* Shorter transition for smoother animation */
+    overflow: auto;
+`;
+
+const TradeItem = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1vh;
+`;
+
+const Checkbox = styled.input.attrs({ type: 'checkbox' })`
+    width: 2vh;
+    height: 2vh;
 `;
 
 const Trades = () => {
     const [socket, setSocket] = useState(null);
     const [trades, setTrades] = useState([]);
     const [isSelfTradesVisible, setIsSelfTradesVisible] = useState(false);
+    const [myTrades, setMyTrades] = useState([]);
+    const [selectedTrade, setSelectedTrade] = useState(null);
+    const [selectedMyTrade, setSelectedMyTrade] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('urban_auth_token');
@@ -180,8 +199,61 @@ const Trades = () => {
         }
     };
 
-    const handleMyTrades = () => {
+    const handleMyTrades = async () => {
         setIsSelfTradesVisible(!isSelfTradesVisible);
+        if (isSelfTradesVisible === false) {
+            const token = localStorage.getItem('urban_auth_token');
+            const { id } = jwtDecode(token);
+            console.log(id);
+
+            try {
+                const response = await axios.post('http://localhost:8000/trades/my-trades', {
+                    userId: id
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setMyTrades(response.data.myItems);
+                console.log(myTrades);
+            } catch (error) {
+                console.error('Error fetching my trades:', error);
+            }
+        }
+    };
+
+    const handleCheckboxChange = (index) => {
+        setSelectedMyTrade(index);
+    };
+
+    const handleTradeButtonClick = (index) => {
+        setSelectedTrade(index);
+        handleMyTrades();
+    };
+
+    const handleRequestTrade = async () => {
+        const selectedTradeItem = trades[selectedTrade];
+        const selectedMyTradeItem = myTrades[selectedMyTrade];
+
+        if (selectedTradeItem && selectedMyTradeItem) {
+            try {
+                const token = localStorage.getItem('urban_auth_token');
+                const response = await axios.post('http://localhost:8000/trades/request-trade', {
+                    tradeItem: selectedTradeItem,
+                    myTradeItem: selectedMyTradeItem
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                console.log('Trade request sent:', response.data);
+            } catch (error) {
+                console.error('Error sending trade request:', error);
+            }
+        } else {
+            console.error('Please select a trade item and one of your trades.');
+        }
     };
 
     return (
@@ -206,7 +278,7 @@ const Trades = () => {
                                 <CardDescription>{trade.description}</CardDescription>
                                 <p>Posted By:- {trade.user.userName}</p>
                                 <CardPrice>Price: ${trade.price}</CardPrice>
-                                <TradeButton onClick={handleMyTrades}>
+                                <TradeButton onClick={() => handleTradeButtonClick(index)}>
                                     <img src="/trade.png" alt="Trade" />
                                     Trade
                                 </TradeButton>
@@ -217,7 +289,24 @@ const Trades = () => {
                     <p>No trades available nearby. Search for trades.</p>
                 )}
             </TradesList>
-            <SelfTrades isVisible={isSelfTradesVisible}></SelfTrades>
+            <SelfTrades isVisible={isSelfTradesVisible}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <h1>Your Trades</h1>
+                    <button onClick={handleRequestTrade}>Request</button>
+                </div>
+                {myTrades.map((item, i) => (
+                    <TradeItem key={i}>
+                        <div>
+                            <p style={{ fontWeight: "500", fontSize: "2.5vh", marginBottom: ".5vh" }}>{item.name}</p>
+                            <p>{item.description}</p>
+                        </div>
+                        <Checkbox
+                            checked={selectedMyTrade === i}
+                            onChange={() => handleCheckboxChange(i)}
+                        />
+                    </TradeItem>
+                ))}
+            </SelfTrades>
         </Container>
     );
 };

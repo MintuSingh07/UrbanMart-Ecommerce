@@ -4,7 +4,8 @@ const {
     singleProductController, 
     wishlistController, 
     addToWishlistController, 
-    deleteFromWishlistController 
+    deleteFromWishlistController, 
+    getNotificationsController
 } = require('../controllers/productController');
 const verifyToken = require('../middlewares/verifyToken');
 
@@ -21,5 +22,6 @@ router.use(verifyToken);
 router.post('/wishlist', wishlistController);
 router.post('/api/add-to-wishlist', addToWishlistController);
 router.post('/api/delete-from-wishlist', deleteFromWishlistController);
+router.post('/notifications', getNotificationsController);
 
 module.exports = router;

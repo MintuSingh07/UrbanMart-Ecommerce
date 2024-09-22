@@ -4,38 +4,58 @@ import { jwtDecode } from 'jwt-decode'; // Import jwtDecode correctly
 import styled from 'styled-components';
 
 const NavBar = () => {
-    const [isLoggedin, setIsLoggedin] = useState(false);
-    const [userName, setUserName] = useState('');
+  const [isLoggedin, setIsLoggedin] = useState(false);
+  const [userName, setUserName] = useState('');
 
-    useEffect(() => {
-        const token = localStorage.getItem('urban_auth_token');
-        if (token) {
-            const decodedData = jwtDecode(token);
-            setUserName(decodedData.userName);
-            setIsLoggedin(true);
-        }
-    }, []);
+  useEffect(() => {
+    localStorage.setItem("urban_auth_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjQ2ZWE1MzJhMGE5MzQ1ZTFhYjI3ZSIsInVzZXJOYW1lIjoiTWludHUgU2luZ2giLCJlbWFpbCI6Im1pbnR1dGVzdDFAZ21haWwuY29tIiwiaWF0IjoxNzIzMTAwODYxfQ.UuOGzI_GbMGDTV9QYdX__VSvZFt2MIkNRp0WDzXXyQk')
+    const token = localStorage.getItem('urban_auth_token');
+    if (token) {
+      const decodedData = jwtDecode(token);
+      setUserName(decodedData.userName);
+      setIsLoggedin(true);
+    }
+  }, []);
 
-    return (
-        <Nav>
-            <Logo>UrbanMart</Logo>
-            <SearchBar>
-                <input type="text" placeholder="Search for products, brands and more" />
-            </SearchBar>
-            <NavLinks>
-                <Link style={{ color: "white", textDecoration: "none" }} to={isLoggedin ? '/profile' : '/auth/login'}>
-                    <NavLink>
-                        <i className="fa-solid fa-user"></i>
-                        <NavLinkText>{isLoggedin ? userName : "Login"}</NavLinkText>
-                    </NavLink>
-                </Link>
+  return (
+    <Nav>
+      <Logo><Link to='/'>UrbanMart</Link></Logo>
+      <SearchBar>
+        <input type="text" placeholder="Search for products, brands and more" />
+      </SearchBar>
+      <NavLinks>
+
+        <Link style={{ color: "white", textDecoration: "none" }} to={isLoggedin ? '/profile' : '/auth/login'}>
+          <NavLink>
+            <i className="fa-solid fa-user"></i>
+            <NavLinkText>{isLoggedin ? userName : "Login"}</NavLinkText>
+          </NavLink>
+        </Link>
+
+        {
+          isLoggedin ? (
+            <>
+              <Link style={{ color: "white", textDecoration: "none" }} to='/cart'>
                 <NavLink>
-                    <i className="fa-solid fa-cart-shopping"></i>
-                    <NavLinkText>Cart</NavLinkText>
+                  <i className="fa-solid fa-cart-shopping"></i>
+                  <NavLinkText>Cart</NavLinkText>
                 </NavLink>
-            </NavLinks>
-        </Nav>
-    );
+              </Link>
+
+              <Link style={{ color: "white", textDecoration: "none" }} to='/notifications'>
+                <NavLink>
+                  <i class="fa-solid fa-bell"></i>
+                  <NavLinkText>Notifications</NavLinkText>
+                </NavLink>
+              </Link>
+            </>
+          ) : (
+            <></>
+          )
+        }
+      </NavLinks>
+    </Nav>
+  );
 };
 
 export default NavBar;
