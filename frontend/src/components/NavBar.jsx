@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Import jwtDecode correctly
+import { jwtDecode } from 'jwt-decode';
 import styled from 'styled-components';
+import useStore from '../app/store';
 
 const NavBar = () => {
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [userName, setUserName] = useState('');
+  const [countCartItem, setCountCartItem] = useState("");
+  const cartProducts = useStore((state) => state.cartProducts)
 
   useEffect(() => {
-    localStorage.setItem("urban_auth_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjQ2ZWE1MzJhMGE5MzQ1ZTFhYjI3ZSIsInVzZXJOYW1lIjoiTWludHUgU2luZ2giLCJlbWFpbCI6Im1pbnR1dGVzdDFAZ21haWwuY29tIiwiaWF0IjoxNzIzMTAwODYxfQ.UuOGzI_GbMGDTV9QYdX__VSvZFt2MIkNRp0WDzXXyQk')
+    // localStorage.setItem("urban_auth_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjQ2ZWE1MzJhMGE5MzQ1ZTFhYjI3ZSIsInVzZXJOYW1lIjoiTWludHUgU2luZ2giLCJlbWFpbCI6Im1pbnR1dGVzdDFAZ21haWwuY29tIiwiaWF0IjoxNzIzMTAwODYxfQ.UuOGzI_GbMGDTV9QYdX__VSvZFt2MIkNRp0WDzXXyQk')
     const token = localStorage.getItem('urban_auth_token');
     if (token) {
       const decodedData = jwtDecode(token);
@@ -16,6 +19,10 @@ const NavBar = () => {
       setIsLoggedin(true);
     }
   }, []);
+
+  useEffect(() => {
+    cartProducts.length > 99 ? setCountCartItem("99+") : setCountCartItem(cartProducts.length);
+  }, [cartProducts])
 
   return (
     <Nav>
@@ -37,7 +44,10 @@ const NavBar = () => {
             <>
               <Link style={{ color: "white", textDecoration: "none" }} to='/cart'>
                 <NavLink>
-                  <i className="fa-solid fa-cart-shopping"></i>
+                  <div style={{ position: "relative" }}>
+                    <i className="fa-solid fa-cart-shopping"></i>
+                    <Counter>{countCartItem}</Counter>
+                  </div>
                   <NavLinkText>Cart</NavLinkText>
                 </NavLink>
               </Link>
@@ -117,4 +127,18 @@ const NavLink = styled.div`
 
 const NavLinkText = styled.span`
   margin-left: 5px;
+`;
+
+const Counter = styled.div`
+  height: 2vh;
+  width: 2vh;
+  background-color: red;
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  left: 1.3vh;
+  bottom: 1.3vh;
 `;
