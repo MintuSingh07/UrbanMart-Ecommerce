@@ -26,7 +26,7 @@ const NavBar = () => {
 
   return (
     <Nav>
-      <Logo><Link to='/'>UrbanMart</Link></Logo>
+      <Logo>UrbanMart</Logo>
       <SearchBar>
         <input type="text" placeholder="Search for products, brands and more" />
       </SearchBar>
@@ -76,7 +76,7 @@ const Nav = styled.nav`
   align-items: center;
   padding: 10px 20px;
   color: white;
-  background-color: #fff;
+  background-color: #161618;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -116,7 +116,7 @@ const NavLink = styled.div`
   font-size: 2vh;
   display: flex;
   align-items: center;
-  color: black;
+  color: #ffffff;
 
   @media (max-width: 768px) {
     & > span {

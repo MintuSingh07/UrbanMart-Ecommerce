@@ -7,9 +7,9 @@ import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
 
 const banners = [
-    { title: 'Product Name 1', description: 'See More description 1', link: '#product1' },
-    { title: 'Product Name 2', description: 'See More description 2', link: '#product2' },
-    { title: 'Product Name 3', description: 'See More description 3', link: '#product3' },
+    { title: 'Product Name 1', description: 'See More description 1', link: '#product1', src: "https://marketplace.canva.com/EAFoEJMTGiI/1/0/1600w/canva-beige-aesthetic-new-arrival-fashion-banner-landscape-cNjAcBMeF9s.jpg" },
+    { title: 'Product Name 2', description: 'See More description 2', link: '#product2', src: "https://marketplace.canva.com/EAFHG6sbLsQ/1/0/1600w/canva-brown-beige-simple-special-sale-banner-lQfPvhnznqs.jpg" },
+    { title: 'Product Name 3', description: 'See More description 3', link: '#product3', src: "https://marketplace.canva.com/EAF3fxiMgHY/1/0/1600w/canva-black-white-bold-simple-fashion-product-promotion-landscape-banner-V-clBpZoamE.jpg" },
 ];
 
 const Home = () => {
@@ -155,24 +155,21 @@ const Home = () => {
     return (
         <HomeContainer>
             {/* Banner */}
-            <BannerPosition>
-                {banners.map((banner, index) => (
-                    <BannerF key={index} isActive={index === activeBannerIndex}>
-                        <div className="bannerBottom">
-                            <div>
-                                <h1 ref={(el) => (titleRefs.current[index] = el)}>{banner.title}</h1>
-                                <p ref={(el) => (descriptionRefs.current[index] = el)}>{banner.description}</p>
-                            </div>
-                            <a
-                                href={banners[activeBannerIndex].link}
-                                className={`iconContainer ${index === activeBannerIndex ? 'visible' : ''}`}
-                            >
-                                <i className="fa-solid fa-arrow-right rotate-icon" ref={iconRef}></i>
-                            </a>
-                        </div>
-                    </BannerF>
-                ))}
-            </BannerPosition>
+            <HeroSection>
+                <p style={{
+                    fontFamily: "Style Script, cursive",
+                    fontSize: "3.5vh",
+                    textAlign: "center",
+                    paddingTop: "5vh",
+                    background: "linear-gradient(165deg, rgba(254,1,154,1) 0%, rgba(255,235,249,1) 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent"
+                }}>
+                    Vergin Pink
+                </p>
+
+                <h1 style={{ color: "white", fontWeight: '500', textAlign: "center" }}>Vergin Pink Kitty Ears Headphone</h1>
+            </HeroSection>
 
             {/* Infinite text scroller */}
             <ScrollerContainer>
@@ -184,19 +181,19 @@ const Home = () => {
 
             {/* Best of Electronics */}
             <div style={{ padding: '2vh', marginTop: '5vh' }}>
-                <h1 style={{ marginBottom: '2vh', fontWeight: '600' }}>Best of Electronics</h1>
+                <h1 style={{ marginBottom: '2vh', fontWeight: '600', color: "white" }}>Best of Electronics</h1>
                 <div style={{ display: 'flex', gap: '2vh', flexWrap: 'wrap' }}>
                     {products.filter(product => product.category === 'Electronics').slice(0, 4).map((product, i) => (
-                            <ProductCard
-                                key={i}
-                                productId={product._id}
-                                title={product.title}
-                                price={product.price}
-                                description={product.description}
-                                images={product.images}
-                                userId={userId}
-                                isLiked={isProductInWishlist(product._id)}
-                            />
+                        <ProductCard
+                            key={i}
+                            productId={product._id}
+                            title={product.title}
+                            price={product.price}
+                            description={product.description}
+                            images={product.images}
+                            userId={userId}
+                            isLiked={isProductInWishlist(product._id)}
+                        />
                     ))}
                     {products.filter(product => product.category === 'Electronics').length > 4 && (
                         <a href="#">See all products</a>
@@ -206,19 +203,19 @@ const Home = () => {
 
             {/* Best of Cloths */}
             <div style={{ padding: '2vh', marginTop: '5vh' }}>
-                <h1 style={{ marginBottom: '2vh', fontWeight: '600' }}>Best of Cloths</h1>
+                <h1 style={{ marginBottom: '2vh', fontWeight: '600', color: "white" }}>Best of Cloths</h1>
                 <div style={{ display: 'flex', gap: '2vh', flexWrap: 'wrap' }}>
                     {products.filter((product) => product.category === 'Clothing').slice(0, 4).map((product, i) => (
-                            <ProductCard
-                                key={i}
-                                productId={product._id}
-                                title={product.title}
-                                price={product.price}
-                                description={product.description}
-                                images={product.images}
-                                userId={userId}
-                                isLiked={isProductInWishlist(product._id)}
-                            />
+                        <ProductCard
+                            key={i}
+                            productId={product._id}
+                            title={product.title}
+                            price={product.price}
+                            description={product.description}
+                            images={product.images}
+                            userId={userId}
+                            isLiked={isProductInWishlist(product._id)}
+                        />
                     ))}
                     {products.filter(product => product.category === 'Clothing').length > 4 && (
                         <a href="#">See all products</a>
@@ -229,19 +226,19 @@ const Home = () => {
             {/* Recommended Products */}
             {recommendedProducts.length > 0 && (
                 <div style={{ padding: '2vh', marginTop: '5vh' }}>
-                    <h1 style={{ marginBottom: '2vh', fontWeight: '600' }}>Recommended Products</h1>
+                    <h1 style={{ marginBottom: '2vh', fontWeight: '600', color: "white" }}>Recommended Products</h1>
                     <div style={{ display: 'flex', gap: '2vh', flexWrap: 'wrap' }}>
                         {recommendedProducts.map((product, i) => (
-                                <ProductCard
-                                    key={i}
-                                    productId={product._id}
-                                    title={product.title}
-                                    price={product.price}
-                                    description={product.description}
-                                    images={product.images}
-                                    userId={userId}
-                                    isLiked={isProductInWishlist(product._id)}
-                                />
+                            <ProductCard
+                                key={i}
+                                productId={product._id}
+                                title={product.title}
+                                price={product.price}
+                                description={product.description}
+                                images={product.images}
+                                userId={userId}
+                                isLiked={isProductInWishlist(product._id)}
+                            />
                         ))}
                         <a href="#">See all products</a>
                     </div>
@@ -266,149 +263,99 @@ const Home = () => {
 };
 
 const HomeContainer = styled.div`
-  height: auto;
-  width: 100%;
-`;
-
-const BannerPosition = styled.div`
-  height: 92.7vh;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-`;
-
-const BannerF = styled.div`
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  transition: top 0.5s ease-in-out;
-
-  .bannerBottom {
-    position: absolute;
+    height: auto;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2vh;
-    bottom: 2vh;
-  }
+    background-color: #161618;
+`;
 
-  .rotate-icon {
-    font-size: 4vh;
-    color: #000000; /* Arrow color */
-    transform: rotate(0);
-    transition: transform 0.3s ease-in-out;
-    cursor: pointer;
-  }
-
-  .rotate-icon:hover {
-    transform: rotate(-35deg);
-  }
-
-  .iconContainer {
-    height: 8vh;
-    width: 8vh;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: white;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    position: absolute;
-    right: 2vh;
-    border: 1px solid black;
-  }
-
-  .iconContainer.visible {
-    opacity: 1;
-  }
+const HeroSection = styled.div`
+    height: 90vh;
+    width: 100%;
+    background-color: #161618;
 `;
 
 const ScrollerContainer = styled.div`
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  background-color: #f8f555;
-  padding: 1rem 0;
-  margin: 2rem 0;
-`;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: #f8f555;
+    padding: 1rem 0;
+    margin: 2rem 0;
+    `;
 
 const ScrollerContent = styled.div`
-  display: inline-block;
-  font-size: 1.5rem;
-  font-weight: bold;
-`;
+    display: inline-block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    `;
 
 const ModelWatchBanner = styled.div`
-  min-height: 90vh;
-  width: 100%;
-  margin-top: 5vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  #watchbannerbg {
-    height: 100%;
-    width: 98%;
-    background-color: #F0EDE5;
-    border-radius: 2vh;
+    min-height: 90vh;
+    width: 100%;
+    margin-top: 5vh;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
 
-    @media (max-width: 768px) {
-        flex-direction: column;
-    }
+    #watchbannerbg {
+        height: 100%;
+        width: 98%;
+        background-color: #F0EDE5;
+        border-radius: 2vh;
+        display: flex;
+        justify-content: space-between;
 
-    #bannerside {
-      padding-left: 2vh;
-      padding-top: 5vh;
-      font-size: 3vh;
-      font-family: "Cinzel", serif;
-      font-weight: 500;
-    }
-  }
-
-  #watchmodels {
-    position: relative;
-    height: 100%;
-    width: 60%;
-    line-height: 5vh;
-    padding-top: 5vh;
-    padding-left: 2vh;
-
-    @media (max-width: 768px) {
-        width: 100%;
-    };
-
-    h1 {
-      font-size: 6vh;
-      font-family: 'Qochy';
-      font-weight: 200;
-      line-height: 7vh;
-      margin-bottom: 5vh;
-    };
-
-    h3 {
-      font-size: 2.5vh;
-    };
-
-    #watchmodel1{
         @media (max-width: 768px) {
-            height: 25vh;
+            flex-direction: column;
         }
-    };
 
-    #bannerBottomText{
-        width: 45%;
+        #bannerside {
+        padding-left: 2vh;
+        padding-top: 5vh;
+        font-size: 3vh;
+        font-family: "Cinzel", serif;
+        font-weight: 500;
+        }
+    }
+
+    #watchmodels {
+        position: relative;
+        height: 100%;
+        width: 60%;
+        line-height: 5vh;
+        padding-top: 5vh;
+        padding-left: 2vh;
+
+        @media (max-width: 768px) {
+            width: 100%;
+        };
+
+        h1 {
+        font-size: 6vh;
+        font-family: 'Qochy';
+        font-weight: 200;
+        line-height: 7vh;
         margin-bottom: 5vh;
-        @media (max-width: 768px) {
-            width: 90%;
+        };
+
+        h3 {
+        font-size: 2.5vh;
+        };
+
+        #watchmodel1{
+            @media (max-width: 768px) {
+                height: 25vh;
+            }
+        };
+
+        #bannerBottomText{
+            width: 45%;
+            margin-bottom: 5vh;
+            @media (max-width: 768px) {
+                width: 90%;
+            }
         }
     }
-  }
-`;
+    `;
 
 export default Home;
