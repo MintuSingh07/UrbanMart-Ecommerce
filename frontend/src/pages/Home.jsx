@@ -169,6 +169,8 @@ const Home = () => {
                     Vergin Pink
                 </p>
                 <h1 style={{ color: "white", fontWeight: '500', textAlign: "center" }}>Vergin Pink Kitty Ears Headphone</h1>
+                <Plate></Plate>
+                <Shadow></Shadow>
                 <HeadPhone />
             </HeroSection>
 
@@ -273,6 +275,7 @@ const HeroSection = styled.div`
     height: 90vh;
     width: 100%;
     background-color: #161618;
+    position: relative;
 `;
 
 const ScrollerContainer = styled.div`
@@ -358,5 +361,30 @@ const ModelWatchBanner = styled.div`
         }
     }
     `;
+
+const Plate = styled.div`
+    height: 8vh;
+    width: 70vh;
+    background-color: #00b7ff;
+    position: absolute;
+    left: 50%;
+    top: 73%;
+    transform: translate(-50%, 40%); /* Center the plate */
+    border-radius: 50%;
+    filter: blur(200px);
+
+`;
+const Shadow = styled.div`
+    height: 15vh;
+    width: 180vh;
+    background-color: #b73aff;
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, 40%); /* Center the plate */
+    border-radius: 50%;
+    opacity: 0.2;
+    filter: blur(200px);
+`;
 
 export default Home;
