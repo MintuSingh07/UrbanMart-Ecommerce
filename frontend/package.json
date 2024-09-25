@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.8",
     "@reduxjs/toolkit": "^2.2.6",
+    "@types/three": "^0.168.0",
     "axios": "^1.7.2",
     "gsap": "^3.12.5",
     "jwt-decode": "^4.0.0",
@@ -20,6 +23,7 @@
     "react-router-dom": "^6.25.1",
     "socket.io-client": "^4.7.5",
     "styled-components": "^6.1.12",
+    "three": "^0.168.0",
     "zustand": "^4.5.5"
   },
   "devDependencies": {

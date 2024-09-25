@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
+import HeadPhone from '../components/HeadPhone';
 
 const banners = [
     { title: 'Product Name 1', description: 'See More description 1', link: '#product1', src: "https://marketplace.canva.com/EAFoEJMTGiI/1/0/1600w/canva-beige-aesthetic-new-arrival-fashion-banner-landscape-cNjAcBMeF9s.jpg" },
@@ -167,8 +168,8 @@ const Home = () => {
                 }}>
                     Vergin Pink
                 </p>
-
                 <h1 style={{ color: "white", fontWeight: '500', textAlign: "center" }}>Vergin Pink Kitty Ears Headphone</h1>
+                <HeadPhone />
             </HeroSection>
 
             {/* Infinite text scroller */}
