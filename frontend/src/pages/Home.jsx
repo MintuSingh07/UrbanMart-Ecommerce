@@ -171,6 +171,17 @@ const Home = () => {
                 <h1 style={{ color: "white", fontWeight: '500', textAlign: "center" }}>Vergin Pink Kitty Ears Headphone</h1>
                 <Plate></Plate>
                 <Shadow></Shadow>
+                <BottomPurchase>
+                    <div style={{display: "flex", alignItems: "center", width: "100%", gap: "5vh", color: "White"}}>
+                        <p>Recommends</p>
+                        <p>Colors</p>
+                        <p>How to use</p>
+                    </div>
+                    <div style={{height: "4vh", width: "10vw", backgroundColor: "white", borderRadius: "5vh", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+                        <p style={{fontSize: "1.5vh"}}>Show Now</p>
+                        <button style={{height: "3vh", borderRadius: "2vh", padding: ".5vh 1vh"}}>$299.00</button>
+                    </div>
+                </BottomPurchase>
                 <HeadPhone />
             </HeroSection>
 
@@ -364,7 +375,7 @@ const ModelWatchBanner = styled.div`
 
 const Plate = styled.div`
     height: 8vh;
-    width: 70vh;
+    width: 100%;
     background-color: #00b7ff;
     position: absolute;
     left: 50%;
@@ -376,7 +387,7 @@ const Plate = styled.div`
 `;
 const Shadow = styled.div`
     height: 15vh;
-    width: 180vh;
+    width: 100%;
     background-color: #b73aff;
     position: absolute;
     left: 50%;
@@ -387,4 +398,21 @@ const Shadow = styled.div`
     filter: blur(200px);
 `;
 
+const BottomPurchase = styled.div`
+    height: 6vh;
+    width: 95%;
+    background-color: #fff; 
+    position: absolute;
+    top: 95%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    border-radius: 5vh;
+    background: rgba(154, 154, 154, 0.12);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8.7px);
+    border: 1px solid rgba(177, 177, 177, 0.29);
+    display: flex;
+    align-items: center;
+    padding: 0 5vh;
+`;
 export default Home;
