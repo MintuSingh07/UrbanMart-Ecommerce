@@ -46,12 +46,12 @@ const ProductCard = ({ title, description, price, images, productId, userId, isL
 
   const handleAddToCart = () => {
     console.log('Added to cart');
-    addToCartHandler({ title, description, price, productId });
+    addToCartHandler({ title, description, price, productId,images });
   };
 
   const handleRemoveFromCart = () => {
     console.log('Removed from cart');
-    removeFromCartHandler({ title, description, price, productId });
+    removeFromCartHandler({ title, description, price, productId, images });
   };
 
   return (
