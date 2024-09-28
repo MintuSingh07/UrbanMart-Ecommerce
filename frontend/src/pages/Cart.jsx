@@ -92,6 +92,10 @@ const CartContainer = styled.div`
     color: white;
     display: flex;
     flex-direction: row;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
 `;
 
 const ProductList = styled.ul`
@@ -123,6 +127,7 @@ const Header = styled.h1`
 
 const PriceBox = styled.div`
     min-height: 50vh;
+    overflow-y: auto;
 `;
 
 const PriceSections = styled.div`

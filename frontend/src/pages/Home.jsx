@@ -157,6 +157,7 @@ const Home = () => {
         <HomeContainer>
             {/* Banner */}
             <HeroSection>
+                <HeroBG src="stars.png" alt=""/>
                 <p style={{
                     fontFamily: "Style Script, cursive",
                     fontSize: "3.5vh",
@@ -280,6 +281,7 @@ const HomeContainer = styled.div`
     height: auto;
     width: 100%;
     background-color: #161618;
+    overflow-x: hidden;
 `;
 
 const HeroSection = styled.div`
@@ -414,5 +416,17 @@ const BottomPurchase = styled.div`
     display: flex;
     align-items: center;
     padding: 0 5vh;
+`;
+
+const HeroBG = styled.img`
+    /* style={{position: "absolute", scale: '.7', top: "-13vh"}}  */
+    position: absolute;
+    scale: .7;
+    top: -13vh;
+
+    @media (max-width: 768px) {
+        top: 0;
+        left: -50vh;
+    }
 `;
 export default Home;
