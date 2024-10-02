@@ -4,7 +4,6 @@ import ProductCard from '../components/ProductCard';
 import { gsap } from 'gsap';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { Link } from 'react-router-dom';
 import HeadPhone from '../components/HeadPhone';
 
 const banners = [
@@ -157,7 +156,7 @@ const Home = () => {
         <HomeContainer>
             {/* Banner */}
             <HeroSection>
-                <HeroBG src="stars.png" alt=""/>
+                {/* <HeroBG src="stars.png" alt=""/> */}
                 <p style={{
                     fontFamily: "Style Script, cursive",
                     fontSize: "3.5vh",
@@ -382,7 +381,7 @@ const Plate = styled.div`
     position: absolute;
     left: 50%;
     top: 73%;
-    transform: translate(-50%, 40%); /* Center the plate */
+    transform: translate(-50%, 40%);
     border-radius: 50%;
     filter: blur(200px);
 
@@ -394,7 +393,7 @@ const Shadow = styled.div`
     position: absolute;
     left: 50%;
     top: 20%;
-    transform: translate(-50%, 40%); /* Center the plate */
+    transform: translate(-50%, 40%);
     border-radius: 50%;
     opacity: 0.2;
     filter: blur(200px);
@@ -418,15 +417,15 @@ const BottomPurchase = styled.div`
     padding: 0 5vh;
 `;
 
-const HeroBG = styled.img`
-    /* style={{position: "absolute", scale: '.7', top: "-13vh"}}  */
-    position: absolute;
-    scale: .7;
-    top: -13vh;
+// const HeroBG = styled.img`
+//     /* style={{position: "absolute", scale: '.7', top: "-13vh"}}  */
+//     position: absolute;
+//     scale: .7;
+//     top: -13vh;
 
-    @media (max-width: 768px) {
-        top: 0;
-        left: -50vh;
-    }
-`;
+//     @media (max-width: 768px) {
+//         top: 0;
+//         left: -50vh;
+//     }
+// `;
 export default Home;

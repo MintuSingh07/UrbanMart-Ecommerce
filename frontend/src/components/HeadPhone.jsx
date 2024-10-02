@@ -3,13 +3,12 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Environment } from '@react-three/drei';
 
 const HeadphoneModel = () => {
-    const { scene } = useGLTF('/assets/headphone2.glb'); // Ensure this path is correct
+    const { scene } = useGLTF('/assets/headphone2.glb');
     const modelRef = useRef();
 
-    // Use useFrame to automatically spin the model
     useFrame(() => {
         if (modelRef.current) {
-            modelRef.current.rotation.y += 0.003; // Adjust spin speed here
+            modelRef.current.rotation.y += 0.004;
         }
     });
 
@@ -28,7 +27,7 @@ const HeadPhone = () => {
                     "https://dl.polyhaven.org/file/ph-assets/HDRIs/exr/4k/shanghai_bund_4k.exr"
                 ]}
             />
-            <HeadphoneModel /> {/* Include the model here */}
+            <HeadphoneModel />
             <OrbitControls 
                 enableZoom={false}
                 enablePan={false}
@@ -39,7 +38,6 @@ const HeadPhone = () => {
     );
 };
 
-// Preload the GLTF model
 useGLTF.preload('/assets/headphone2.glb');
 
 export default HeadPhone;

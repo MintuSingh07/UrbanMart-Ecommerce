@@ -11,43 +11,38 @@ const Cart = () => {
         return today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
     };
 
-    const deliveryDate = calculateDeliveryDate(2); // Assuming delivery takes 2 days
+    const deliveryDate = calculateDeliveryDate(2);
 
-    // Dynamic calculations
     const subtotal = cartProducts.reduce((acc, product) => acc + product.price, 0).toFixed(2);
-    const discount = 49.00; // Example discount
-    const deliveryCharges = 40.00; // Example delivery charges
+    const discount = 49.00;
+    const deliveryCharges = 40.00;
     const total = (subtotal - discount + deliveryCharges).toFixed(2);
 
     return (
         <CartContainer>
-            <div style={{ height: "92.7vh", width: "60%", padding: "1vh 10vh" }}>
+            <LeftPanel>
                 <Header>Cart</Header>
                 {cartProducts.length > 0 ? (
                     <ProductList>
                         {cartProducts.map((product) => (
                             <ProductItem key={product.id}>
                                 <ProductInfo>
-                                    <div
-                                        style={{
-                                            height: "15vh",
-                                            width: "7vw",
-                                            backgroundColor: "red",
-                                            overflow: "hidden",
-                                            backgroundImage: `url(${product.images[0]})`,
-                                            backgroundSize: "cover",
-                                            backgroundPosition: "center",
-                                            marginRight: "3vh"
-                                        }}
+                                    <ProductImage style={{
+                                        backgroundImage: `url(${product.images[0]})`,
+                                    }}
                                     />
-                                    <div style={{ gap: "1vh", display: "flex", flexDirection: "column" }}>
-                                        <p style={{ fontSize: "3vh", fontWeight: "500" }}>{product.title.length > 30 ? `${product.title.substring(0, 30)}...` : product.title}</p>
-                                        <p>{product.description.length > 40 ? `${product.description.substring(0, 40)}...` : product.description}</p>
-                                        <p style={{ fontWeight: "400", fontSize: "2.2vh" }}>Price: ₹{product.price.toFixed(2)}</p>
-                                    </div>
-                                    <p style={{ fontSize: "1.7vh", marginLeft: "8vh", position: "absolute", right: "1vh"}}>
+                                    <ProductDetails>
+                                        <ProductTitle>
+                                            {product.title.length > 30 ? `${product.title.substring(0, 30)}...` : product.title}
+                                        </ProductTitle>
+                                        <ProductDescription>
+                                            {product.description.length > 40 ? `${product.description.substring(0, 40)}...` : product.description}
+                                        </ProductDescription>
+                                        <ProductPrice>Price: ₹{product.price.toFixed(2)}</ProductPrice>
+                                    </ProductDetails>
+                                    <DeliveryDate>
                                         Delivery by {deliveryDate}
-                                    </p>
+                                    </DeliveryDate>
                                 </ProductInfo>
                             </ProductItem>
                         ))}
@@ -55,38 +50,38 @@ const Cart = () => {
                 ) : (
                     <EmptyMessage>Your cart is empty!</EmptyMessage>
                 )}
-            </div>
-            <div style={{ height: "92.7vh", width: "40%", padding: "1vh 10vh" }}>
-                <p style={{ fontSize: "3vh", fontWeight: "500", marginBottom: "5vh" }}>Price Details</p>
+            </LeftPanel>
+            <RightPanel>
+                <PriceDetailsHeader>Price Details</PriceDetailsHeader>
                 <PriceBox>
                     <PriceSections>
-                        <p style={{ color: '#a3a3a3' }}>Subtotal</p>
-                        <p style={{ fontWeight: "400" }}>₹{subtotal}</p>
+                        <PriceLabel>Subtotal</PriceLabel>
+                        <PriceValue>₹{subtotal}</PriceValue>
                     </PriceSections>
                     <hr style={{ opacity: ".2" }} />
                     <PriceSections>
-                        <p style={{ color: '#a3a3a3' }}>Discount</p>
-                        <p style={{ fontWeight: "400", color: "red" }}>- ₹{discount.toFixed(2)}</p>
+                        <PriceLabel>Discount</PriceLabel>
+                        <PriceValue style={{ color: "red" }}>- ₹{discount.toFixed(2)}</PriceValue>
                     </PriceSections>
                     <hr style={{ opacity: ".2" }} />
                     <PriceSections>
-                        <p style={{ color: '#a3a3a3' }}>Delivery Charges</p>
-                        <p style={{ fontWeight: "400" }}>₹{deliveryCharges.toFixed(2)}</p>
+                        <PriceLabel>Delivery Charges</PriceLabel>
+                        <PriceValue>₹{deliveryCharges.toFixed(2)}</PriceValue>
                     </PriceSections>
                     <hr style={{ opacity: ".2" }} />
                     <PriceSections>
-                        <p style={{ color: '#a3a3a3' }}>Total</p>
-                        <p style={{ fontWeight: "400", fontSize: "3vh" }}>₹{total}</p>
+                        <PriceLabel>Total</PriceLabel>
+                        <TotalPriceValue>₹{total}</TotalPriceValue>
                     </PriceSections>
                     <CheckoutBtn>Checkout</CheckoutBtn>
                 </PriceBox>
-            </div>
+            </RightPanel>
         </CartContainer>
     );
 };
 
 const CartContainer = styled.div`
-    height: 92.7vh;
+    min-height: 93.78vh;
     width: 100%;
     background-color: #161616;
     color: white;
@@ -98,14 +93,40 @@ const CartContainer = styled.div`
     }
 `;
 
+const LeftPanel = styled.div`
+    min-height: 20vh;
+    width: 60%;
+    padding: 1vh 10vh;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        padding: 2vh 3vh;
+    }
+`;
+
+const RightPanel = styled.div`
+    min-height: 20vh;
+    width: 40%;
+    padding: 1vh 10vh;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        padding: 2vh 3vh;    
+    }
+`;
+
+const Header = styled.h1`
+    font-size: 4vh;
+    font-weight: 500;
+    text-align: center;
+`;
+
 const ProductList = styled.ul`
     list-style-type: none;
     padding: 0;
 `;
 
-const ProductItem = styled.li`
-
-`;
+const ProductItem = styled.li``;
 
 const ProductInfo = styled.div`
     display: flex;
@@ -113,20 +134,76 @@ const ProductInfo = styled.div`
     position: relative;
 `;
 
+const ProductImage = styled.div`
+    height: 15vh;
+    width: 7vw;
+    background-color: red;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    margin-right: 3vh;
+
+    @media (max-width: 768px) {
+        height: 7vh;
+        width: 24%;
+        margin-right: 2vh;
+    }
+`;
+
+const ProductDetails = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+`;
+
+const ProductTitle = styled.p`
+    font-size: 3vh;
+    font-weight: 500;
+
+    @media (max-width: 768px) {
+        font-size: 2.5vh;
+    }
+`;
+
+const ProductDescription = styled.p``;
+
+const ProductPrice = styled.p`
+    font-weight: 400;
+    font-size: 2.2vh;
+
+    @media (max-width: 768px) {
+        font-size: 2vh;
+    }
+`;
+
+const DeliveryDate = styled.p`
+    font-size: 1.7vh;
+    margin-left: 8vh;
+    position: absolute;
+    right: 1vh;
+
+    @media (max-width: 768px) {
+        display: none
+    }
+`;
+
 const EmptyMessage = styled.p`
     font-size: 1.2rem;
     color: #666;
 `;
 
-const Header = styled.h1`
-    font-size: 4vh;
+const PriceDetailsHeader = styled.p`
+    font-size: 3vh;
     font-weight: 500;
-    text-align: center;
     margin-bottom: 5vh;
+
+    @media (max-width: 768px) {
+        margin-bottom: 2vh;
+    }
 `;
 
 const PriceBox = styled.div`
-    min-height: 50vh;
+    min-height: 20vh;
     overflow-y: auto;
 `;
 
@@ -134,6 +211,19 @@ const PriceSections = styled.div`
     display: flex;
     justify-content: space-between;
     margin: 2vh 0;
+`;
+
+const PriceLabel = styled.p`
+    color: #a3a3a3;
+`;
+
+const PriceValue = styled.p`
+    font-weight: 400;
+`;
+
+const TotalPriceValue = styled.p`
+    font-weight: 400;
+    font-size: 3vh;
 `;
 
 const CheckoutBtn = styled.button`
