@@ -20,62 +20,63 @@ const Cart = () => {
 
     return (
         <CartContainer>
-            <LeftPanel>
-                <Header>Cart</Header>
-                {cartProducts.length > 0 ? (
-                    <ProductList>
-                        {cartProducts.map((product) => (
-                            <ProductItem key={product.id}>
-                                <ProductInfo>
-                                    <ProductImage style={{
-                                        backgroundImage: `url(${product.images[0]})`,
-                                    }}
-                                    />
-                                    <ProductDetails>
-                                        <ProductTitle>
-                                            {product.title.length > 30 ? `${product.title.substring(0, 30)}...` : product.title}
-                                        </ProductTitle>
-                                        <ProductDescription>
-                                            {product.description.length > 40 ? `${product.description.substring(0, 40)}...` : product.description}
-                                        </ProductDescription>
-                                        <ProductPrice>Price: ₹{product.price.toFixed(2)}</ProductPrice>
-                                    </ProductDetails>
-                                    <DeliveryDate>
-                                        Delivery by {deliveryDate}
-                                    </DeliveryDate>
-                                </ProductInfo>
-                            </ProductItem>
-                        ))}
-                    </ProductList>
-                ) : (
-                    <EmptyMessage>Your cart is empty!</EmptyMessage>
-                )}
-            </LeftPanel>
-            <RightPanel>
-                <PriceDetailsHeader>Price Details</PriceDetailsHeader>
-                <PriceBox>
-                    <PriceSections>
-                        <PriceLabel>Subtotal</PriceLabel>
-                        <PriceValue>₹{subtotal}</PriceValue>
-                    </PriceSections>
-                    <hr style={{ opacity: ".2" }} />
-                    <PriceSections>
-                        <PriceLabel>Discount</PriceLabel>
-                        <PriceValue style={{ color: "red" }}>- ₹{discount.toFixed(2)}</PriceValue>
-                    </PriceSections>
-                    <hr style={{ opacity: ".2" }} />
-                    <PriceSections>
-                        <PriceLabel>Delivery Charges</PriceLabel>
-                        <PriceValue>₹{deliveryCharges.toFixed(2)}</PriceValue>
-                    </PriceSections>
-                    <hr style={{ opacity: ".2" }} />
-                    <PriceSections>
-                        <PriceLabel>Total</PriceLabel>
-                        <TotalPriceValue>₹{total}</TotalPriceValue>
-                    </PriceSections>
-                    <CheckoutBtn>Checkout</CheckoutBtn>
-                </PriceBox>
-            </RightPanel>
+            {cartProducts.length > 0 ? (
+                <>
+                    <LeftPanel>
+                        <Header>Cart</Header>
+                        <ProductList>
+                            {cartProducts.map((product) => (
+                                <ProductItem key={product.id}>
+                                    <ProductInfo>
+                                        <ProductImage style={{
+                                            backgroundImage: `url(${product.images[0]})`,
+                                        }} />
+                                        <ProductDetails>
+                                            <ProductTitle>
+                                                {product.title.length > 30 ? `${product.title.substring(0, 30)}...` : product.title}
+                                            </ProductTitle>
+                                            <ProductDescription>
+                                                {product.description.length > 40 ? `${product.description.substring(0, 40)}...` : product.description}
+                                            </ProductDescription>
+                                            <ProductPrice>Price: ₹{product.price.toFixed(2)}</ProductPrice>
+                                        </ProductDetails>
+                                        <DeliveryDate>
+                                            Delivery by {deliveryDate}
+                                        </DeliveryDate>
+                                    </ProductInfo>
+                                </ProductItem>
+                            ))}
+                        </ProductList>
+                    </LeftPanel>
+                    <RightPanel>
+                        <PriceDetailsHeader>Price Details</PriceDetailsHeader>
+                        <PriceBox>
+                            <PriceSections>
+                                <PriceLabel>Subtotal</PriceLabel>
+                                <PriceValue>₹{subtotal}</PriceValue>
+                            </PriceSections>
+                            <hr style={{ opacity: ".2" }} />
+                            <PriceSections>
+                                <PriceLabel>Discount</PriceLabel>
+                                <PriceValue style={{ color: "red" }}>- ₹{discount.toFixed(2)}</PriceValue>
+                            </PriceSections>
+                            <hr style={{ opacity: ".2" }} />
+                            <PriceSections>
+                                <PriceLabel>Delivery Charges</PriceLabel>
+                                <PriceValue>₹{deliveryCharges.toFixed(2)}</PriceValue>
+                            </PriceSections>
+                            <hr style={{ opacity: ".2" }} />
+                            <PriceSections>
+                                <PriceLabel>Total</PriceLabel>
+                                <TotalPriceValue>₹{total}</TotalPriceValue>
+                            </PriceSections>
+                            <CheckoutBtn>Checkout</CheckoutBtn>
+                        </PriceBox>
+                    </RightPanel>
+                </>
+            ) : (
+                <EmptyMessage>Your cart is empty!</EmptyMessage>
+            )}
         </CartContainer>
     );
 };
@@ -183,13 +184,15 @@ const DeliveryDate = styled.p`
     right: 1vh;
 
     @media (max-width: 768px) {
-        display: none
+        display: none;
     }
 `;
 
 const EmptyMessage = styled.p`
     font-size: 1.2rem;
     color: #666;
+    text-align: center;
+    margin-top: 20vh;
 `;
 
 const PriceDetailsHeader = styled.p`
@@ -229,12 +232,11 @@ const TotalPriceValue = styled.p`
 const CheckoutBtn = styled.button`
     padding: 2vh;
     width: 100%;
-    border-radius: 2vh;
+    border-radius: 16px;
     font-weight: 500;
     outline: 0;
     margin-top: 2vh;
     background: rgba(255, 255, 255, 0.09);
-    border-radius: 16px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(8.7px);
     border: 1px solid rgba(138, 138, 138, 0.29);

@@ -111,7 +111,7 @@ const requestTrade = async (req, res) => {
         // For example, you can add the request to the trade owner's notifications
         tradeOwner.notifications.push({
             type: 'trade-request',
-            message: `User ${req.user.userName} wants to trade ${myTradeItem.name} for your ${tradeItem.name}.`,
+            message: `${req.user.userName} wants to trade ${myTradeItem.name} for your ${tradeItem.name}.`,
             tradeItem: tradeItem,
             myTradeItem: myTradeItem,
         });
@@ -125,4 +125,30 @@ const requestTrade = async (req, res) => {
     }
 };
 
-module.exports = { handleSocketEvents, getSelfTradesController, requestTrade };
+const deleteNotification = async (req, res) => {
+    const { notificationId, userId } = req.body;
+
+    if (!notificationId) {
+        return res.status(400).json({ error: 'Notification ID is required' });
+    }
+
+    try {
+        const user = await User.findOneAndUpdate(
+            { _id: userId },
+            { $pull: { notifications: { _id: notificationId } } },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'Notification deleted successfully', notifications: user.notifications });
+    } catch (error) {
+        console.error(error); // Log error for debugging
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+module.exports = { handleSocketEvents, getSelfTradesController, requestTrade, deleteNotification };
