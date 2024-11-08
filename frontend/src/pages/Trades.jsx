@@ -399,20 +399,6 @@ const Trades = () => {
             console.log('Trades within radius received:', data);
             setTrades(data);
             setShowSidebar(true);
-
-            if (map) {
-                data.forEach((trade) => {
-                    const { coordinates } = trade.location;
-                    const latitude = coordinates[1];
-                    const longitude = coordinates[0];
-
-                    L.marker([latitude, longitude])
-                        .addTo(map)
-                        .bindPopup(
-                            `<strong>${trade.name}</strong><br>${trade.description}<br>Price: $${trade.price}`
-                        );
-                });
-            }
         });
 
         newSocket.on('disconnect', () => {
@@ -471,32 +457,16 @@ const Trades = () => {
         }
     };
 
-    const fetchTrades = async () => {
-        if (userLocation) {
-            try {
-                const token = localStorage.getItem('urban_auth_token');
-                const response = await axios.post(
-                    'http://localhost:8000/trades/nearby',
-                    {
-                        latitude: userLocation.latitude,
-                        longitude: userLocation.longitude,
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+    const handelShowOnMap = (coords) => {
+        if(map){
+            const longitude = coords[0]
+            const latitude = coords[1]
 
-                console.log('Trades requested:', response.data.trades);
-                setTrades(response.data.trades);
-            } catch (error) {
-                console.error('Error fetching trades:', error);
-            }
-        } else {
-            console.error('User location is not set. Please ensure location is obtained.');
+            L.marker([latitude, longitude])
+                .addTo(map)
+                .bindPopup("hi")
         }
-    };
+    }
 
     return (
         <Container>
@@ -504,7 +474,6 @@ const Trades = () => {
                 <Button
                     onClick={() => {
                         sendLocationUpdate();
-                        fetchTrades();
                     }}
                 >
                     <img src="/radar2.png" alt="Radar" />
@@ -518,6 +487,7 @@ const Trades = () => {
                             <h3>{trade.name}</h3>
                             <p>{trade.description}</p>
                             <p>Price: ${trade.price}</p>
+                            <button onClick={()=> handelShowOnMap(trade.location.coordinates)}>On Map</button>
                         </TradeItem>
                     ))}
                 </Sidebar>
