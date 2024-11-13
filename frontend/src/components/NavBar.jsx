@@ -11,7 +11,7 @@ const NavBar = () => {
   const cartProducts = useStore((state) => state.cartProducts)
 
   useEffect(() => {
-    // localStorage.setItem("urban_auth_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjQ2ZWE1MzJhMGE5MzQ1ZTFhYjI3ZSIsInVzZXJOYW1lIjoiTWludHUgU2luZ2giLCJlbWFpbCI6Im1pbnR1dGVzdDFAZ21haWwuY29tIiwiaWF0IjoxNzIzMTAwODYxfQ.UuOGzI_GbMGDTV9QYdX__VSvZFt2MIkNRp0WDzXXyQk')
+    localStorage.setItem("urban_auth_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjQ2ZWE1MzJhMGE5MzQ1ZTFhYjI3ZSIsInVzZXJOYW1lIjoiTWludHUgU2luZ2giLCJlbWFpbCI6Im1pbnR1dGVzdDFAZ21haWwuY29tIiwiaWF0IjoxNzIzMTAwODYxfQ.UuOGzI_GbMGDTV9QYdX__VSvZFt2MIkNRp0WDzXXyQk')
     const token = localStorage.getItem('urban_auth_token');
     if (token) {
       const decodedData = jwtDecode(token);

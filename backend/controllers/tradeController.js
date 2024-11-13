@@ -1,5 +1,6 @@
 const TradeItem = require('../models/tradeItem.model');
 const User = require('../models/user.model');
+const client = require('../client');
 
 // Function to calculate distance between two geographic coordinates
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -7,15 +8,13 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Earth's radius in kilometers
 
     const dLat = toRadians(lat2 - lat1);
-    const dLon = toRadians(lon1 - lon2);
+    const dLon = toRadians(lon2 - lon1);
 
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
     return R * c; // Distance in kilometers
 };
 
@@ -23,8 +22,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 const getTradesWithinRadius = async (latitude, longitude, radiusInKm) => {
     try {
         const allTrades = await TradeItem.find().populate('user', 'userName email');
-        // console.log('All trades:', allTrades);
-
+        
         const tradesWithinRadius = allTrades.filter(trade => {
             if (!trade.location || !Array.isArray(trade.location.coordinates) || trade.location.coordinates.length !== 2) {
                 console.warn(`Invalid trade location data for trade ${trade._id}:`, trade.location);
@@ -33,7 +31,6 @@ const getTradesWithinRadius = async (latitude, longitude, radiusInKm) => {
 
             const [tradeLongitude, tradeLatitude] = trade.location.coordinates;
             const distance = calculateDistance(latitude, longitude, tradeLatitude, tradeLongitude);
-            // console.log(`Distance to trade ${trade._id}: ${distance} km`);
             return distance <= radiusInKm;
         });
 
@@ -52,11 +49,10 @@ const handleSocketEvents = (socket) => {
         const { latitude, longitude } = data;
         console.log(`Received location update: Latitude ${latitude}, Longitude ${longitude}`);
 
-        const radiusInKm = 5;
+        const radiusInKm = 10;
 
         try {
             const trades = await getTradesWithinRadius(latitude, longitude, radiusInKm);
-            console.log('Trades within 5 km:', trades);
             socket.emit('tradesWithinRadius', trades);
         } catch (error) {
             console.error('Error fetching trades within radius:', error);
@@ -76,14 +72,22 @@ const getSelfTradesController = async (req, res) => {
     }
 
     try {
-        const populatedUser = await User.findById(userId).populate('tradeItems', 'name description');
-        console.log('User with populate:', populatedUser);
+        let selfTrades = await client.get('selftrades');
 
-        if (!populatedUser) {
+        if (selfTrades) {
+            return res.json({ myItems: JSON.parse(selfTrades) });
+        }
+
+        const user = await User.findById(userId).populate('tradeItems', 'name description');
+        
+        if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        res.json({ myItems: populatedUser.tradeItems });
+        selfTrades = user.tradeItems;
+        await client.setex('selftrades', 600, JSON.stringify(selfTrades));
+
+        res.json({ myItems: selfTrades });
     } catch (error) {
         console.error('Error fetching self trades:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -107,8 +111,7 @@ const requestTrade = async (req, res) => {
             return res.status(404).json({ message: 'Your trade item not found.' });
         }
 
-        // Send the trade request (you can customize this as needed)
-        // For example, you can add the request to the trade owner's notifications
+        // Send the trade request
         tradeOwner.notifications.push({
             type: 'trade-request',
             message: `${req.user.userName} wants to trade ${myTradeItem.name} for your ${tradeItem.name}.`,
@@ -117,7 +120,6 @@ const requestTrade = async (req, res) => {
         });
 
         await tradeOwner.save();
-
         return res.status(200).json({ message: 'Trade request sent successfully.' });
     } catch (error) {
         console.error('Error handling trade request:', error);
@@ -145,10 +147,9 @@ const deleteNotification = async (req, res) => {
 
         res.status(200).json({ message: 'Notification deleted successfully', notifications: user.notifications });
     } catch (error) {
-        console.error(error); // Log error for debugging
+        console.error('Error deleting notification:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 
 module.exports = { handleSocketEvents, getSelfTradesController, requestTrade, deleteNotification };
