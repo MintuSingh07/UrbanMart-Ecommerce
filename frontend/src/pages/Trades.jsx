@@ -30,7 +30,13 @@ const Button = styled.button`
     position: absolute;
     z-index: 99;
     right: 2vh;
-    top: 4vh;
+    top: 2vh;
+
+    @media (max-width: 768px) {
+        scale: .8;
+        top: 1vh;
+        right: -1vh;
+    }
 `;
 
 const MapWrapper = styled.div`
@@ -39,11 +45,15 @@ const MapWrapper = styled.div`
     position: relative;
     z-index: 1;
     background-color: #161617;
+
+    @media (max-width: 768px) {
+        height: 100vh; // Set a fixed height for mobile view
+    }
 `;
 
 const ImageOverlay = styled.img`
     position: absolute;
-    top: 3vh;
+    top: 2vh;
     left: 2vh;
     z-index: 10;
     height: 4vh;
@@ -53,9 +63,21 @@ const Sidebar = styled.div`
     height: 100vh;
     width: ${(props) => (props.showSidebar ? '20vw' : '0')};
     background-color: #161617;
-    transition: width 0.3s ease;
-    overflow: hidden;
+    transition: all 0.3s ease;
+    overflow: auto;
+
+    @media (max-width: 768px) {
+        width: 100vw;
+        height: ${(props) => (props.showSidebar ? '40vh' : '0')}; // Adjust height for mobile view
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        transform: translateY(${(props) => (props.showSidebar ? '0' : '100%')});
+        z-index: 9999;
+        transition: transform 0.3s ease;
+    }
 `;
+
 
 const TradeItem = styled.div`
     padding: 10px;
@@ -168,12 +190,14 @@ const Trades = () => {
             // Shift the map view to the product's location
             map.setView([latitude, longitude], 16, { animate: true, duration: 1 });
 
-            setTimeout(() => {
-                if (userLocation) {
-                    map.setView([userLocation.latitude, userLocation.longitude], 15, { animate: true, duration: 1 }); // Reset to user's location
-                }
-            }, 1100);
+            // setTimeout(() => {
+            //     if (userLocation) {
+            //         map.setView([userLocation.latitude, userLocation.longitude], 15, { animate: true, duration: 1 }); // Reset to user's location
+            //     }
+            // }, 1100);
         }
+
+        setShowSidebar(!showSidebar)
     };
 
     return (
