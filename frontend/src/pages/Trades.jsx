@@ -77,6 +77,8 @@ const Sidebar = styled.div`
         transform: translateY(${(props) => (props.showSidebar ? '0' : '100%')});
         z-index: 9999;
         transition: transform 0.3s ease;
+        border-top-left-radius: 1vh;
+        border-top-right-radius: 1vh;
     }
 `;
 
@@ -145,12 +147,34 @@ const IconWrapper = styled.div`
 `;
 
 const Holder = styled.div`
-    height: 1vh;
-    width: 30%;
+    height: .8vh;
+    width: 25%;
     background-color: #757575;
     border-radius: 2vh;
-    margin: 1vh 0 2vh 0;
+    margin: .3vh 0 3vh 0;
 `;
+
+const DistanceIndicator = styled.div`
+    position: absolute;
+    height: 6vh;
+    width: 40vw;
+    z-index: 99;
+    top: 95%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5vh;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4.6px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+`
 
 const Trades = () => {
     const [socket, setSocket] = useState(null);
@@ -159,6 +183,7 @@ const Trades = () => {
     const [userLocation, setUserLocation] = useState(null);
     const [showSidebar, setShowSidebar] = useState(false);
     const [productMarker, setProductMarker] = useState(null);
+    const [displayDistance, setDisplayDistance] = useState('');
 
     useEffect(() => {
         const token = localStorage.getItem('urban_auth_token');
@@ -246,8 +271,10 @@ const Trades = () => {
                 .openPopup();
 
             setProductMarker(newMarker);
-
             map.setView([latitude, longitude], 16, { animate: true, duration: 1 });
+
+            const dist = calculateDistance(userLocation.latitude, userLocation.longitude, latitude, longitude).toFixed(2);
+            setDisplayDistance(dist);
         }
 
         setShowSidebar(!showSidebar);
@@ -271,28 +298,50 @@ const Trades = () => {
             </Header>
             <div style={{ display: 'flex' }}>
                 <Sidebar showSidebar={showSidebar}>
-                    <Holder></Holder>
-                    <h2 style={{color: "white", padding: ".5vh 1vh 1.5vh 0"}}>Tradeable Items</h2>
-                    {trades.map((trade) => (
-                        <TradeItem key={trade._id}>
-                            <TradeInfo>
-                                <TradeHeader>
-                                    <TradeName>{trade.name}</TradeName>
-                                    <TradeDistance>• {userToProductDistanceCalc(trade.location.coordinates[1], trade.location.coordinates[0])} km</TradeDistance>
-                                </TradeHeader>
-                                <TradePrice>${trade.price}</TradePrice>
-                                <TradeDescription>{trade.description}</TradeDescription>
-                            </TradeInfo>
-                            <IconWrapper title="Show on Map" onClick={() => handelShowOnMap(trade.location.coordinates)}>
-                                <i className="fa-regular fa-map" />
-                            </IconWrapper>
-                        </TradeItem>
-                    ))}
+                    {trades.length > 0 && <h2 style={{ color: "white", padding: ".5vh 1vh 1.5vh 0" }}>Tradeable Items</h2>}
+                    {trades.length === 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', height: "100%", alignItems: "center", justifyContent: "center" }}>
+                            <p style={{ color: "gray", textAlign: "center", padding: "1vh", fontSize: "2vh" }}>No trades available</p>
+                            <p style={{ color: "gray", textAlign: "center", fontSize: "2vh" }}>Search for trades in your local</p>
+                        </div>
+                    ) : (
+                        trades.map((trade) => (
+                            <TradeItem key={trade._id}>
+                                <TradeInfo>
+                                    <TradeHeader>
+                                        <TradeName>{trade.name}</TradeName>
+                                        <TradeDistance>
+                                            • {userToProductDistanceCalc(
+                                                trade.location.coordinates[1],
+                                                trade.location.coordinates[0]
+                                            )}{" "}
+                                            km
+                                        </TradeDistance>
+                                    </TradeHeader>
+                                    <TradePrice>${trade.price}</TradePrice>
+                                    <TradeDescription>{trade.description}</TradeDescription>
+                                </TradeInfo>
+                                <IconWrapper
+                                    title="Show on Map"
+                                    onClick={() => handelShowOnMap(trade.location.coordinates)}
+                                >
+                                    <i className="fa-regular fa-map" />
+                                </IconWrapper>
+                            </TradeItem>
+                        ))
+                    )}
                 </Sidebar>
+
                 <div style={{ position: 'relative', width: '100%' }}>
                     <MapWrapper id="map" />
                     <ImageOverlay src="sidebar.svg" alt="" onClick={() => setShowSidebar(!showSidebar)} />
                 </div>
+                {displayDistance &&
+                    <DistanceIndicator>
+                        <h4>Trade is within</h4>
+                        <p>{displayDistance} km</p>
+                    </DistanceIndicator>
+                }
             </div>
         </Container>
     );
