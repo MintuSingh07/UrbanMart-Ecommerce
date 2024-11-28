@@ -65,7 +65,7 @@ const SingleProduct = () => {
                     <div><OtherImages></OtherImages></div>
                     <div><OtherImages></OtherImages></div>
                     <div><OtherImages></OtherImages></div>
-                    <div><OtherImages></OtherImages></div>
+                    {/* <div><OtherImages></OtherImages></div> */}
                 </MobileCarousel>
             </FlexContainer>
             <FlexColumn>

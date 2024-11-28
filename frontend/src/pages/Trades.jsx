@@ -425,7 +425,7 @@ const Trades = () => {
                                         </div>
 
                                         {/* product Usage Details */}
-                                        <div style={{ width: "100%", height: "10vh", display: "flex", justifyContent: "space-around" }}>
+                                        <div style={{ width: "100%", display: "flex", justifyContent: "space-around" }}>
 
                                             {/* Years Old */}
                                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -441,7 +441,7 @@ const Trades = () => {
                                         </div>
 
                                         {/* Trade Button */}
-                                        <button style={{ padding: "1.5vh", width: '100%', borderRadius: ".5vh", cursor: "pointer" }}>Request Trade</button>
+                                        <button style={{ padding: "1.5vh", width: '100%', borderRadius: ".5vh", cursor: "pointer", margin: "1vh 0" }}>Request Trade</button>
                                     </div>
                                 </>
                             )}
