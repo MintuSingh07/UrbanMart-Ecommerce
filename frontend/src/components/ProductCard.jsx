@@ -149,6 +149,7 @@ const Button = styled.button`
   left: 50%;
   transform: translate(-50%, -0%);
   bottom: 1vh;
+  font-size: 2vh;
 `;
 
 export default ProductCard;

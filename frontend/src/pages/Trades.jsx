@@ -5,6 +5,7 @@ import axios from 'axios';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import calculateDistance from '../utility/calculateDistance';
+import 'leaflet-routing-machine';
 
 const Container = styled.div`
     position: relative;
@@ -33,7 +34,7 @@ const Button = styled.button`
     right: 2vh;
     top: 2vh;
 
-    @media (max-width: 768px) {
+    @media (max-width: 1650px) {
         scale: .8;
         top: 1vh;
         right: -1vh;
@@ -47,7 +48,7 @@ const MapWrapper = styled.div`
     z-index: 1;
     background-color: #161617;
 
-    @media (max-width: 768px) {
+    @media (max-width: 1650px) {
         height: 100vh;
     }
 `;
@@ -66,9 +67,8 @@ const Sidebar = styled.div`
     background-color: #161617;
     transition: all 0.3s ease;
     overflow: auto;
-    padding: 1vh;
 
-    @media (max-width: 768px) {
+    @media (max-width: 1650px) {
         width: 100vw;
         height: ${(props) => (props.showSidebar ? '40vh' : '0')};
         position: fixed;
@@ -79,6 +79,7 @@ const Sidebar = styled.div`
         transition: transform 0.3s ease;
         border-top-left-radius: 1vh;
         border-top-right-radius: 1vh;
+        padding: 1vh;
     }
 `;
 
@@ -184,7 +185,9 @@ const Trades = () => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [productMarker, setProductMarker] = useState(null);
     const [displayDistance, setDisplayDistance] = useState('');
+    const [selectedProduct, setSelectedProduct] = useState({});
 
+    //? HANDLE WEB-SOCKET REQUEST FOR TRADES
     useEffect(() => {
         const token = localStorage.getItem('urban_auth_token');
         const newSocket = io('http://localhost:8000', {
@@ -213,6 +216,7 @@ const Trades = () => {
         };
     }, [map]);
 
+    //? HANDLE MAP MOUNTING & POINTERS
     useEffect(() => {
         const mapInstance = L.map('map', {
             center: [51.505, -0.09],
@@ -250,6 +254,7 @@ const Trades = () => {
         };
     }, []);
 
+    //? CAPTURE AND SEND USER LOCATION TO SOCKET
     const sendLocationUpdate = () => {
         if (userLocation && socket) {
             console.log('Sending location update:', userLocation);
@@ -257,10 +262,12 @@ const Trades = () => {
         }
     };
 
-    const handelShowOnMap = (coords) => {
+    //? HANDLE PRODUCT LOCATION ON MAP
+    const handelShowOnMap = (coords, trade) => {
         if (map) {
             const [longitude, latitude] = coords;
 
+            // Remove the previous marker if it exists
             if (productMarker) {
                 map.removeLayer(productMarker);
                 setProductMarker(null);
@@ -273,16 +280,66 @@ const Trades = () => {
             setProductMarker(newMarker);
             map.setView([latitude, longitude], 16, { animate: true, duration: 1 });
 
+            // Remove the previous route if it exists
+            if (map.routeControl) {
+                map.removeControl(map.routeControl);
+                map.routeControl = null;
+            }
+
+            // Calculate the route from the user's location to the product's location
+            if (userLocation) {
+                const userLatLng = [userLocation.latitude, userLocation.longitude];
+                const productLatLng = [latitude, longitude];
+
+                // Using Leaflet Routing Machine to calculate the path
+                const routeControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(userLatLng),
+                        L.latLng(productLatLng)
+                    ],
+                    routeWhileDragging: true,
+                    lineOptions: { styles: [{ color: "green", weight: 4, className: 'animate' }] },
+                    showAlternatives: false,
+                    createMarker: () => null, // Disable the marker at each waypoint
+                }).addTo(map);
+
+                // Save the route control on the map object for future reference
+                map.routeControl = routeControl;
+            }
+
             const dist = calculateDistance(userLocation.latitude, userLocation.longitude, latitude, longitude).toFixed(2);
             setDisplayDistance(dist);
+            setSelectedProduct(trade);
         }
 
         setShowSidebar(!showSidebar);
     };
 
+    //? DISTANCE CALCULATOR
     const userToProductDistanceCalc = (prodLat, prodLong) => {
         return calculateDistance(userLocation.latitude, userLocation.longitude, prodLat, prodLong).toFixed(2);
     };
+
+    //* (SOME UI PROBLEM SOLVE [IGNORE])
+    useEffect(() => {
+        const hideLeafletTopRight = () => {
+            const elements = document.querySelectorAll('.leaflet-top.leaflet-right');
+            elements.forEach((element) => {
+                element.style.display = 'none';
+            });
+        };
+
+        // Run once after component mounts
+        hideLeafletTopRight();
+
+        // Optional: If elements may be dynamically added, use MutationObserver
+        const observer = new MutationObserver(hideLeafletTopRight);
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     return (
         <Container>
@@ -298,7 +355,7 @@ const Trades = () => {
             </Header>
             <div style={{ display: 'flex' }}>
                 <Sidebar showSidebar={showSidebar}>
-                    {trades.length > 0 && <h2 style={{ color: "white", padding: ".5vh 1vh 1.5vh 0" }}>Tradeable Items</h2>}
+                    {trades.length > 0 && <h2 style={{ color: "white", padding: "1vh 1vh 2vh .5vh" }}>Tradeable Items</h2>}
                     {trades.length === 0 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', height: "100%", alignItems: "center", justifyContent: "center" }}>
                             <p style={{ color: "gray", textAlign: "center", padding: "1vh", fontSize: "2vh" }}>No trades available</p>
@@ -318,12 +375,16 @@ const Trades = () => {
                                             km
                                         </TradeDistance>
                                     </TradeHeader>
-                                    <TradePrice>${trade.price}</TradePrice>
-                                    <TradeDescription>{trade.description}</TradeDescription>
+                                    <TradeDescription>
+                                        {trade.description.length > 60
+                                            ? `${trade.description.slice(0, 60)}...`
+                                            : trade.description}
+                                    </TradeDescription>
+
                                 </TradeInfo>
                                 <IconWrapper
                                     title="Show on Map"
-                                    onClick={() => handelShowOnMap(trade.location.coordinates)}
+                                    onClick={() => handelShowOnMap(trade.location.coordinates, trade)}
                                 >
                                     <i className="fa-regular fa-map" />
                                 </IconWrapper>
@@ -331,14 +392,70 @@ const Trades = () => {
                         ))
                     )}
                 </Sidebar>
+                {displayDistance && <Sidebar showSidebar={!showSidebar}>
+                    {selectedProduct &&
+                        <>
+                            {selectedProduct && (
+                                <>
+                                    <h1 style={{ color: "white", padding: ".5vh 1vh 2vh 1vh" }}>Details</h1>
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "90%", margin: "0 auto", gap: "2vh" }}>
+                                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", width: "100%", height: "20vh", marginTop: "-8%" }}>
+                                            {/* Left Image */}
+                                            <div style={{ width: "70%", height: "15vh", backgroundColor: "black", borderRadius: "1vh", overflow: "hidden", position: "absolute", left: "0%", bottom: "0", zIndex: 0 }}>
+                                                <img loading='lazy' src={selectedProduct.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "1vh", filter: "contrast(100%) brightness(0.6)" }} />
+                                            </div>
 
+                                            {/* Right Image */}
+                                            <div style={{ width: "70%", height: "15vh", backgroundColor: "black", borderRadius: "1vh", overflow: "hidden", position: "absolute", right: "0%", bottom: "0", zIndex: 0, }} >
+                                                <img loading='lazy' src={selectedProduct.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "1vh", filter: "contrast(100%) brightness(0.6)" }} />
+                                            </div>
+
+                                            {/* Center Image */}
+                                            <div style={{ width: "70%", height: "17vh", backgroundColor: "black", borderRadius: "1vh", overflow: "hidden", position: "absolute", zIndex: 1, boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)", top: "20%" }} >
+                                                <img loading='lazy' src={selectedProduct.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "1vh", }} />
+                                            </div>
+                                        </div>
+
+                                        {/* Text details */}
+                                        <div style={{ marginTop: "2vh" }}>
+                                            <h2 style={{ margin: "0", fontSize: "3vh", color: "#ffffff" }}>{selectedProduct.name}</h2>
+                                            <p style={{ fontSize: "1.7vh", color: "#a7a7a8", margin: "1vh 0" }}>
+                                                {selectedProduct.description}
+                                            </p>
+                                        </div>
+
+                                        {/* product Usage Details */}
+                                        <div style={{ width: "100%", height: "10vh", display: "flex", justifyContent: "space-around" }}>
+
+                                            {/* Years Old */}
+                                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                                <h1 style={{ color: "white", marginBottom: ".5vh", fontWeight: "500" }}>1.5</h1>
+                                                <p style={{ color: "#a7a7a8" }}>Year(s) Old</p>
+                                            </div>
+
+                                            {/* Condition */}
+                                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                                <h1 style={{ color: "white", marginBottom: ".5vh", fontWeight: "500" }}>Good</h1>
+                                                <p style={{ color: "#a7a7a8" }}>Condition</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Trade Button */}
+                                        <button style={{ padding: "1.5vh", width: '100%', borderRadius: ".5vh", cursor: "pointer" }}>Request Trade</button>
+                                    </div>
+                                </>
+                            )}
+                        </>
+
+                    }
+                </Sidebar>}
                 <div style={{ position: 'relative', width: '100%' }}>
                     <MapWrapper id="map" />
                     <ImageOverlay src="sidebar.svg" alt="" onClick={() => setShowSidebar(!showSidebar)} />
                 </div>
                 {displayDistance &&
                     <DistanceIndicator>
-                        <h4>Trade is within</h4>
+                        <h4 style={{ marginBottom: ".3vh" }}>Trade is within</h4>
                         <p>{displayDistance} km</p>
                     </DistanceIndicator>
                 }

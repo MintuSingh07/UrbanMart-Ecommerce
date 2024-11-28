@@ -7,65 +7,37 @@ const homeController = async (req, res) => {
     const { userId } = req.body;
 
     try {
-        let allProducts = await client.get('allproduct');
-
-        if (allProducts) {
-            allProducts = JSON.parse(allProducts);
-            console.log('Products fetched from Redis');
-        } else {
-            allProducts = await Product.find();
-            if (!allProducts.length) {
-                return res.json({ message: "No products to show" });
-            }
-
-            await client.setex('allproduct', 60, JSON.stringify(allProducts));
-            console.log('All products cached in Redis');
+        // Fetch all products directly from the database
+        const allProducts = await Product.find();
+        if (!allProducts.length) {
+            return res.json({ message: "No products to show" });
         }
 
-        // Step 2: Check if recommended products are cached in Redis for this user
-        let recommendedProducts = await client.get(`recommendedProducts:${userId}`);
-        if (recommendedProducts) {
-            recommendedProducts = JSON.parse(recommendedProducts);
-            console.log('Recommended products fetched from Redis');
-        } else {
-            // Fetch user and their action categories
-            const user = await User.findById(userId).populate({
-                path: 'actions',
-                select: 'category',
-            });
+        // Fetch user and their action categories
+        const user = await User.findById(userId).populate({
+            path: 'actions',
+            select: 'category',
+        });
 
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let categories = user.actions.map(action => action.category);
+        categories = categories.sort(() => Math.random() - 0.5);
+
+        const recommendedProducts = [];
+        for (const category of categories) {
+            const categoryProducts = await Product.find({ category }).limit(5);
+            if (categoryProducts.length) {
+                // Pick a random product from the category
+                recommendedProducts.push(categoryProducts.sort(() => Math.random() - 0.5)[0]);
             }
 
-            let categories = user.actions.map(action => action.category);
-            categories = categories.sort(() => Math.random() - 0.5);
-
-            recommendedProducts = [];
-            for (const category of categories) {
-                let categoryProducts = await client.get(`category:${category}`);
-                if (categoryProducts) {
-                    categoryProducts = JSON.parse(categoryProducts);
-                    console.log(`Fetched ${category} products from Redis`);
-                } else {
-                    categoryProducts = await Product.find({ category }).limit(5);
-                    if (categoryProducts.length) {
-                        await client.setex(`category:${category}`, 600, JSON.stringify(categoryProducts));
-                        console.log(`Cached ${category} products in Redis`);
-                    }
-                }
-
-                if (categoryProducts.length) {
-                    recommendedProducts.push(categoryProducts.sort(() => Math.random() - 0.5)[0]);
-                }
-
-                if (recommendedProducts.length === 5) {
-                    break;
-                }
+            // Limit to 5 recommended products
+            if (recommendedProducts.length === 5) {
+                break;
             }
-
-            await client.setex(`recommendedProducts:${userId}`, 60, JSON.stringify(recommendedProducts));
-            console.log('Recommended products cached in Redis');
         }
 
         // Return both allProducts and recommendedProducts
@@ -75,6 +47,7 @@ const homeController = async (req, res) => {
         res.status(500).json({ message: 'Error fetching products', error: error.message });
     }
 };
+
 
 
 // const homeController = async (req, res) => {
@@ -210,7 +183,7 @@ const getNotificationsController = async (req, res) => {
 
     try {
         const user = await User.findById(userId);
-        res.json({"Notifications": user.notifications})
+        res.json({ "Notifications": user.notifications })
     } catch (error) {
         res.json({ "Error": error });
     }

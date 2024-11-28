@@ -37,7 +37,6 @@ const SingleProduct = () => {
                 .then(response => {
                     setProduct(response.data.product);
                     setRelatedProducts(response.data.relatedProducts);
-                    console.log();
                 })
                 .catch(error => {
                     console.log(error);
@@ -48,6 +47,7 @@ const SingleProduct = () => {
     return (
         <Container>
             <FlexContainer>
+                {/* Image Column for larger screens */}
                 <ImageColumn>
                     <OtherImages></OtherImages>
                     <OtherImages></OtherImages>
@@ -55,12 +55,22 @@ const SingleProduct = () => {
                     <OtherImages></OtherImages>
                     <OtherImages></OtherImages>
                 </ImageColumn>
+
+                {/* Main Image */}
                 <MainImgFrame></MainImgFrame>
+
+                {/* Image Carousel for smaller screens */}
+                <MobileCarousel>
+                    <div><OtherImages></OtherImages></div>
+                    <div><OtherImages></OtherImages></div>
+                    <div><OtherImages></OtherImages></div>
+                    <div><OtherImages></OtherImages></div>
+                    <div><OtherImages></OtherImages></div>
+                </MobileCarousel>
             </FlexContainer>
             <FlexColumn>
                 <Title>{product.title}</Title>
-                <p style={{fontSize: "2vh"}}>{product.description}</p>
-                <Subtitle>By Puma</Subtitle>
+                <Description>{product.description}</Description>
                 <PriceContainer>
                     <Price>${Math.floor(product.price)}</Price>
                     <OriginalPrice>${Math.floor(product.price + 99)}</OriginalPrice>
@@ -69,7 +79,7 @@ const SingleProduct = () => {
                 <StockInfo>
                     {
                         product.isOutOfStock ? (
-                            <OutOfStock>Out of stock: We will notify you if the product get in stock</OutOfStock>
+                            <OutOfStock>Out of stock: We will notify you if the product gets in stock</OutOfStock>
                         ) : (
                             <>
                                 <InStock>In stock:</InStock>
@@ -86,28 +96,34 @@ const SingleProduct = () => {
                         <Button onClick={handleDecrement}>-</Button>
                     </Box>
                 </QuantityContainer>
+                <ButtonContainer>
+                    <button>Buy Now</button>
+                    <button>Add To Cart</button>
+                </ButtonContainer>
             </FlexColumn>
-            {relatedProducts.map((product)=> (
-                <h1>{product.title}</h1>
-            ))}
         </Container>
     );
 };
 
 const Container = styled.div`
-    min-height: 100vh;
+    min-height: 93vh;
     width: 100%;
     display: flex;
     padding: 5vh;
-    justify-content: space-around;
+    color: white;
 
     @media (max-width: 768px) {
-        flex-direction: column
+        flex-direction: column;
+        padding: 2vh;
     }
 `;
 
 const FlexContainer = styled.div`
     display: flex;
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `;
 
 const ImageColumn = styled.div`
@@ -115,6 +131,23 @@ const ImageColumn = styled.div`
     flex-direction: column;
     gap: 1.23vh;
     margin-right: 1vh;
+
+    @media (max-width: 768px) {
+        display: none; /* Hide on mobile */
+    }
+`;
+
+const MobileCarousel = styled.div`
+    display: none;
+
+    @media (max-width: 768px) {
+        display: block;
+        width: 100%;
+        display: flex;
+        gap: 1vh;
+        overflow-x: scroll;
+        scale: 0.88;
+    }
 `;
 
 const OtherImages = styled.div`
@@ -127,41 +160,55 @@ const MainImgFrame = styled.div`
     height: 55vh;
     width: 70vh;
     background-color: #a7a7a7;
-    margin-right: 10vh
+    margin-right: 10vh;
+
+    @media (max-width: 768px) {
+        width: 80vw;
+        height: 50vw;
+        margin-right: 0;
+    }
 `;
 
 const FlexColumn = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1.5vh;
+    width: 50%;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        margin-top: 5vh;
+    }
 `;
 
 const Title = styled.h1`
-    color: black;
     font-size: 3.5vh;
-    font-weight: 400;
+    font-weight: 500;
+    margin-bottom: .2vh;
+`;
+
+const Description = styled.p`
+    font-size: 2vh;
 `;
 
 const Subtitle = styled.p`
     color: #585858;
     font-size: 2.2vh;
-    margin-top: 1vh;
+    /* margin-top: 1vh; */
 `;
 
 const PriceContainer = styled.div`
     display: flex;
     align-items: baseline;
-    margin-top: 5vh;
+    /* margin-top: 5vh; */
 `;
 
 const Price = styled.h3`
-    color: black;
     font-size: 3.5vh;
     font-weight: 500;
 `;
 
 const OriginalPrice = styled.s`
-    color: #3b3b3b;
     font-size: 2.5vh;
     margin-left: 1vh;
 `;
@@ -184,12 +231,12 @@ const InStock = styled.span`
 
 const OutOfStock = styled.span`
     color: red;
-`
+`;
 
 const DeliveryTime = styled.span``;
 
 const QuantityContainer = styled.div`
-    display: flex;
+    display: none;
     align-items: center;
     margin-top: 3vh;
 `;
@@ -226,4 +273,15 @@ const Quantity = styled.span`
     font-weight: 500;
 `;
 
+const ButtonContainer = styled.div`
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    gap: 2vh;
+
+    button{
+        padding: 1vh 2vh;
+        cursor: pointer;
+    }
+`
 export default SingleProduct;

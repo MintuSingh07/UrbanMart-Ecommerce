@@ -85,7 +85,7 @@ const getSelfTradesController = async (req, res) => {
         }
 
         selfTrades = user.tradeItems;
-        await client.setex('selftrades', 600, JSON.stringify(selfTrades));
+        await client.setex('selftrades', 100, JSON.stringify(selfTrades));
 
         res.json({ myItems: selfTrades });
     } catch (error) {
